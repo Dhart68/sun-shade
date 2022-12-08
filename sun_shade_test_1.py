@@ -59,11 +59,8 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, day='2022-12-16', dist=50, roo
     buildings['height'] = buildings['height'].str.split(';') # split heights when there are more than one
     buildings['height'] = buildings['height'].apply(lambda x: max(x)) # select the heighest value
     buildings['height']= pd.to_numeric(buildings['height'], errors='coerce')
-    
-    # pybdshadow preprocessing
-    #buildings = pybdshadow.bd_preprocess(buildings) # is it needed?
-    
-    #calculate sunshine time on the building roof or on the ground regarding the roof parameter
+       
+    # Calculate sunshine time on the building roof or on the ground regarding the roof parameter
     sunshine = pybdshadow.cal_sunshine(buildings,
                                    day=day,
                                    roof=roof,
