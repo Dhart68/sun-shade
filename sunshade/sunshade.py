@@ -15,8 +15,8 @@ from pybdshadow import bdshadow_sunlight
 from pybdshadow.preprocess import bd_preprocess
 from pybdshadow.analysis import get_timetable, cal_sunshine, cal_sunshadows, cal_shadowcoverage, count_overlapping_features
 
-from sunshade import list_of_selected_days, import_OSM, data_preprocessing, solar_radiation_requests
-
+from sunshade import list_of_selected_days, import_OSM, data_preprocessing
+from sunshade.solar_radiation_requests import historical_solar_radiation
 
 
 def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, accuracy=1, padding=1800): #Attention distance!
@@ -45,22 +45,23 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
 
     '''
     # import data from NASA
-    df_solar_radiation_year = solar_radiation_requests(lat, lng)
+    df_solar_radiation_year = historical_solar_radiation(lat, lng)
     
     # import data from OSM
-    raw_buildings = import_OSM(lat=40.775, lng=-73.96, dist=dist, lat_lag = 0.8)
+    raw_buildings = import_OSM.import_OSM(lat=40.775, lng=-73.96, dist=dist, lat_lag = 0.8)
     
     # Data preprocessing
-    buildings = data_preprocessing(raw_buildings)
+    buildings = data_preprocessing.data_preprocessing(raw_buildings)
         
     # Loop on the list of the day
-    day_list = list_of_selected_days(start = '2021-01-03', end = '2021-12-26', n=2)
+    day_list = list_of_selected_days,list_of_selected_days(start = '2021-01-03', end = '2021-12-26', n=2)
     
     # results dataframe preparation
     selected_days=pd.DataFrame()
     selected_days['date'] = day_list
     selected_days['roof']=0
-    selected_days['sunshadow']=0 # init col sunshine   
+    selected_days['sunshadow']=0 # init col sunshine
+    sunshine_all_date = pd.DataFrame()
     
     # Test if selected position is on a roof
     p=Point(lng, lat)
@@ -85,9 +86,15 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         df_test = sunshine[sunshine['intersect'] == True]
         # append the dataframe : 
         selected_days['roof'][i]=roof
-        selected_days['sunshadow'][i]=(np.mean(df_test['Hour'])) 
+        selected_days['sunshadow'][i]=(np.mean(df_test['Hour']))
+        # append the sunshine_all :
+        sunshine['date'] = day
+        sunshine_all_date = pd.concat([sunshine_all_date,sunshine])
+        
         
     # Merge info from API and Cal_sunshine 
-    selected_days # TO DO search data in API and merge it
-        
-    return selected_days
+    selected_days = selected_days.merge(df_solar_radiation_year, how='inner', on='date')
+    
+    
+    return selected_days, sunshine_all_date
+

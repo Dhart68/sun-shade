@@ -3,7 +3,7 @@ import pandas as pd
 
 url='https://power.larc.nasa.gov/api/temporal/daily/point'
 
-def historical_solar_radiation(lat, lon, start_date,end_date):
+def historical_solar_radiation(lat, lon):
     '''Return a day-by-day historical solar radiation for one year at a certain place, given its latitude and longitude.'''
     params= {
         'parameters':'ALLSKY_SFC_SW_DWN','community':'RE', 'latitude': lat,
