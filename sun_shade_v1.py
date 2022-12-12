@@ -15,7 +15,8 @@ from pybdshadow import bdshadow_sunlight
 from pybdshadow.preprocess import bd_preprocess
 from pybdshadow.analysis import get_timetable, cal_sunshine, cal_sunshadows, cal_shadowcoverage, count_overlapping_features
 
-from sun_shade_lib import solar_radiation_requests # to do : creat sun_shade_lib and move the fonction in it
+from sunshade import list_of_selected_days, import_OSM, data_preprocessing, solar_radiation_requests
+
 
 
 def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, accuracy=1, padding=1800): #Attention distance!
@@ -28,8 +29,6 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         latitude
     lng : float
         longitude  
-    day : str
-        the day to calculate the sunshine   
     dist : int
         distance around the define point of interest in meter, limit the surround buildings used in the analysis  
     precision : number
@@ -49,33 +48,15 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
     df_solar_radiation_year = solar_radiation_requests(lat, lng)
     
     # import data from OSM
-    tags = {"building": True, 'height': True, 'ele': True}
-    #center_point = (lat, lng)
-    #raw_buildings = ox.geometries_from_point(center_point, tags=tags, dist=dist)
-    # select only buildings south of the center point (1 degree lat = 111 111 m)
-    if lat>0:
-        optimized_point = (lat-(round(dist/111111,4)*0.8), lng)
-    else:
-        optimized_point = (lat+(round(dist/111111,4)*0.8), lng)
-        
-    raw_buildings = ox.geometries_from_point(optimized_point, tags=tags, dist=dist)
+    raw_buildings = import_OSM(lat=40.775, lng=-73.96, lat_lag = 0.8)
     
     # Data preprocessing
-    raw_buildings.reset_index(inplace = True) # remove index
-    buildings = raw_buildings[['height','geometry']] # new dataframe with only the col needed
-    buildings['building_id'] = range(len(buildings))
-    buildings = buildings[buildings['height'].notna()] # remove na of height
-    buildings['height'] = buildings['height'].str.split(';') # split heights when there are more than one
-    buildings['height'] = buildings['height'].apply(lambda x: max(x)) # select the heighest value
-    buildings['height']= pd.to_numeric(buildings['height'], errors='coerce')
-       
-    # List of day of the year 2021 (every sundays)
-    start = '2021-01-01'
-    end = '2021-12-26'
-    day_list=pd.date_range(start, end,4) # 52 for all year, use 2, 4, 8 to test
-    
+    buildings = data_preprocessing(raw_buildings)
+        
     # Loop on the list of the day
-    # dataframe preparation
+    day_list = list_of_selected_days(start = '2021-01-03', end = '2021-12-26', n=2)
+    
+    # results dataframe preparation
     selected_days=pd.DataFrame()
     selected_days['date'] = day_list
     selected_days['roof']=0
