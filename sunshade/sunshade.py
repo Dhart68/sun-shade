@@ -48,7 +48,7 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
     df_solar_radiation_year = solar_radiation_requests(lat, lng)
     
     # import data from OSM
-    raw_buildings = import_OSM(lat=40.775, lng=-73.96, lat_lag = 0.8)
+    raw_buildings = import_OSM(lat=40.775, lng=-73.96, dist=dist, lat_lag = 0.8)
     
     # Data preprocessing
     buildings = data_preprocessing(raw_buildings)

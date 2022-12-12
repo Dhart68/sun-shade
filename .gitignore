@@ -1,0 +1,14 @@
+raw_data/
+*.egg-info/
+.coverage
+.ipynb_checkpoints
+**/*.DS_Store
+data_raw/
+data_processed/
+*.csv
+__pycache__/
+.env
+.vscode/
+.python-version
+cache/
+my_notebooks/
