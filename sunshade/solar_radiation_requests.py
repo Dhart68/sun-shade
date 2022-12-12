@@ -11,6 +11,10 @@ def historical_solar_radiation(lat, lon, start_date,end_date):
     }
     solar_radiation = requests.get(url, params=params).json()['properties']['parameter']['ALLSKY_SFC_SW_DWN']
     df=pd.DataFrame([solar_radiation]).T.rename(columns={0:'radiation'})
+    
+    df.reset_index(inplace=True)
+    df['date'] = df['index'].apply(lambda x: pd.to_datetime(str(x), format='%Y%m%d'))
+
     return df
 
 if __name__ == '__main__':
