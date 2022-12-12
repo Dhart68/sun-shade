@@ -1,4 +1,4 @@
-def import_OSM(lat=40.775, lng=-73.96, lat_lag = 0.8):
+def import_OSM(lat=40.775, lng=-73.96, dist=50, lat_lag = 0.8):
     # import data from OSM
     tags = {"building": True, 'height': True, 'ele': True}
     #center_point = (lat, lng)
