@@ -63,7 +63,7 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
     buildings = data_preprocessing.data_preprocessing(raw_buildings)
         
     # Loop on the list of the day
-    day_list = list_of_selected_days,list_of_selected_days(start = start, end = end, n=n)
+    day_list = list_of_selected_days.list_of_selected_days(start = start, end = end, n=n)
     
     # results dataframe preparation
     selected_days=pd.DataFrame()
