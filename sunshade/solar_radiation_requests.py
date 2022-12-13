@@ -18,5 +18,5 @@ def historical_solar_radiation(lat, lon):
     return df
 
 if __name__ == '__main__':
-    #historical_solar_radiation(lat, lon, start_date,end_date)
-    print(historical_solar_radiation(51.5072, 0.1276, 20210101,20210331))
+    #historical_solar_radiation(lat, lon)
+    print(historical_solar_radiation(51.5072, 0.1276))
