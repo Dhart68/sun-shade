@@ -96,7 +96,15 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         sunshine['intersect'] = sunshine['geometry'].apply(lambda x: x.intersects(p))
         df_test = sunshine[sunshine['intersect'] == True]
         
-        # append the dataframe : 
+        # append the dataframe :
+        
+        times = get_times(date, lon, lat)
+        date_sunrise = times['sunrise']
+        data_sunset = times['sunset']
+        timestamp_sunrise = pd.Series(date_sunrise).astype('int')
+        timestamp_sunset = pd.Series(data_sunset).astype('int')
+        selected_days.daylight_hour.iloc[i]=(timestamp_sunset.iloc[i]-timestamp_sunrise.iloc[i])/(1000000000*3600)
+        
         selected_days.roof.iloc[i]=roof 
         selected_days.sunshadow.iloc[i]=(np.mean(df_test['Hour']))
         # save the data for one day
