@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import transbigdata as tbd
 import networkx as nx
+from datetime import datetime
 
 from suncalc import get_times
 from shapely.geometry import MultiPolygon, Point
@@ -54,18 +55,23 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
 
     '''
     # import data from NASA
+    print(datetime.now(),"importing data from NASA")
     df_solar_radiation_year = historical_solar_radiation(lat, lng)
 
     # import data from OSM
+    print(datetime.now(),"import data from OSM")
     raw_buildings = import_OSM.import_OSM(lat=lat, lng=lng, dist=dist, lat_lag = 0.8)
 
     # Data preprocessing
+    print(datetime.now(),"Data preprocessing")
     buildings = data_preprocessing.data_preprocessing(raw_buildings)
 
     # Loop on the list of the day
+    print(datetime.now(),"Loop on the list of the day")
     day_list = list_of_selected_days(start = start, end = end, n=n)
 
     # results dataframe preparation
+    print(datetime.now(),"results dataframe preparation")
     selected_days=pd.DataFrame()
     selected_days['date'] = day_list
     selected_days['roof']=0
@@ -73,6 +79,7 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
     sunshine_all_date = pd.DataFrame()
 
     # Test if selected position is on a roof
+    print(datetime.now(),"Test if selected position is on a roof")
     p=Point(lng, lat)
     building_test = buildings['geometry'].apply(lambda x: x.intersects(p))
     if building_test.any()==True:
@@ -82,6 +89,7 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
 
     # Calculate sunshine time on the building roof or on the ground regarding the roof parameter
     # => substraction of the time mesured in shadow to the daylight time (sunset - sunrise)
+    print(datetime.now(),"calculate sunshine time")
     for i in range(len(selected_days)):
         day=str(day_list[i])
         day = day[:10]
@@ -102,9 +110,10 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         print(day)
 
     # Merge info from API and Cal_sunshine
+    print(datetime.now(), "Merge info")
     selected_days = selected_days.merge(df_solar_radiation_year, how='inner', on='date')
 
-
+    print(datetime.now(), "done")
     return selected_days, sunshine_all_date
 
 if __name__ == '__main__':
