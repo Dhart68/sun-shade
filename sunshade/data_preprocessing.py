@@ -1,3 +1,5 @@
+import pandas as pd
+
 def data_preprocessing(raw_buildings):
     # Data preprocessing
     raw_buildings.reset_index(inplace = True) # remove index
