@@ -72,6 +72,7 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
     selected_days['date'] = day_list
     selected_days['roof']=0
     selected_days['sunshadow']=0 # init col sunshine
+    selected_days['daylight_hour']=0
     sunshine_all_date = pd.DataFrame()
     
     # Test if selected position is on a roof
