@@ -115,7 +115,6 @@ sortedcontainers==2.4.0
 soupsieve==2.3.2.post1
 stack-data==0.6.2
 suncalc==0.1.2
--e git+ssh://git@github.com/Dhart68/sun-shade.git@05dbffe9be35a9623fbdc35b51b777e6ac310202#egg=sunshade
 terminado==0.17.1
 tinycss2==1.2.1
 toml==0.10.2
