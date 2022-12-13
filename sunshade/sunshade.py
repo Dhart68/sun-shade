@@ -95,13 +95,26 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         # intersection point with polygon : point p = lng/lat chosen, polygon = area of calculated time of sunshine
         sunshine['intersect'] = sunshine['geometry'].apply(lambda x: x.intersects(p))
         df_test = sunshine[sunshine['intersect'] == True]
+        
         # append the dataframe : 
         selected_days.roof.iloc[i]=roof 
         selected_days.sunshadow.iloc[i]=(np.mean(df_test['Hour']))
+        # save the data for one day
+        file_name_1=f"Data_{lat}_{lng}_{day}"
+        sunshine.to_csv(f'{file_name_1}.csv')
+        
         # append the sunshine_all :
+        sunshine['latitude'] = lat
+        sunshine['longitude'] = lng
         sunshine['date'] = day
+        # save the geodataframe for one day
+        file_name_2=f"Geodata_{lat}_{lng}_{day}"
+        sunshine.to_csv(f'{file_name_2}.csv')
+        
+        #Merge the dataframes
         sunshine_all_date = pd.concat([sunshine_all_date,sunshine])
         print(day)
+        
         
     # Merge info from API and Cal_sunshine 
     selected_days = selected_days.merge(df_solar_radiation_year, how='inner', on='date')
