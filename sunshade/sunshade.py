@@ -99,7 +99,7 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         # append the sunshine_all :
         sunshine['date'] = day
         sunshine_all_date = pd.concat([sunshine_all_date,sunshine])
-        
+        print(day)
         
     # Merge info from API and Cal_sunshine 
     selected_days = selected_days.merge(df_solar_radiation_year, how='inner', on='date')
@@ -109,4 +109,4 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
 
 if __name__ == '__main__':
     print('The function is running with the default parameters')
-    sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, accuracy=1, padding=1800, start = '2021-01-03', end = '2021-12-26', n=2)
+    #sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, accuracy=1, padding=1800, start = '2021-01-03', end = '2021-12-26', n=2)
