@@ -1,5 +1,5 @@
 # imports packages
-
+import os
 import geopandas as gpd
 import osmnx as ox
 import pybdshadow
@@ -14,12 +14,23 @@ from shapely.geometry import MultiPolygon, Point
 from pybdshadow import bdshadow_sunlight
 from pybdshadow.preprocess import bd_preprocess
 from pybdshadow.analysis import get_timetable, cal_sunshine, cal_sunshadows, cal_shadowcoverage, count_overlapping_features
-
+from sunshade.registry import save_cloud, save_local
 from sunshade import import_OSM, data_preprocessing
 from sunshade.solar_radiation_requests import historical_solar_radiation
 from sunshade.list_of_selected_days import list_of_selected_days
 
-def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, accuracy=1, padding=1800, start = '2021-01-03', end = '2021-12-26', n=2): #Attention distance!
+PACKAGE_DIR = os.path.dirname(os.path.dirname(__file__))
+RAW_DATA_DIR = os.path.join(PACKAGE_DIR, 'raw_data')
+
+
+def sun_shade_solar_panel(lat=40.775, lng=-73.96,
+                          dist=50,
+                          precision = 10800,
+                          accuracy=1,
+                          padding=1800,
+                          start = '2021-01-03', end = '2021-12-26',
+                          n=2,
+                          cloud=True): #Attention distance!
     '''
     Calculate the sunshine time in given date for a position, taking into account buildings arount a circle of dist in meter
 
@@ -108,22 +119,24 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         selected_days.loc[i, 'daylight_hour'] = (date_sunset - date_sunrise).total_seconds() / 60 / 60 #(timestamp_sunset-timestamp_sunrise)/(1000000000*3600)
 
         # save the data for one day
-        file_name_1=f"raw-data/Data_{lat}_{lng}_{dist}.csv"
+        file_name_1 = os.path.join(RAW_DATA_DIR, f"Data_{lat}_{lng}_{dist}.csv")
         if i==0:
             selected_days.loc[[i],:].to_csv(file_name_1, mode='w', header=True)
         else:
             selected_days.loc[[i], :].to_csv(file_name_1, mode='a', header=False)
 
-        save_cloud(file_name_1, file_name_1,bucket_name="sunshade_data_bucket")
+        if cloud:
+            save_cloud(file_name_1, file_name_1,bucket_name="sunshade_data_bucket")
 
         # append the sunshine_all :
         sunshine['latitude'] = lat
         sunshine['longitude'] = lng
         sunshine['date'] = day
         # save the geodataframe for one day
-        file_name_2=f"raw_data/Geodata_{lat}_{lng}_{day}.csv"
+        file_name_2 = os.path.join(RAW_DATA_DIR, f"Geodata_{lat}_{lng}_{day}.csv")
         sunshine.to_csv(file_name_2)
-        save_cloud(file_name_2, file_name_2,bucket_name="sunshade_data_bucket")
+        if cloud:
+            save_cloud(file_name_2, file_name_2,bucket_name="sunshade_data_bucket")
 
         print(f'Date : {day} is done')
 
@@ -133,13 +146,20 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
 
     # computing new variable "energy_absorbed"
     selected_days['energy_absorbed']=(selected_days['sunshadow']*selected_days['radiation'])/selected_days['daylight_hour']
-    file_name_3=f"raw-data/Data_{lat}_{lng}_{dist}_all_days.csv"
+    file_name_3 = os.path.join(RAW_DATA_DIR, f"Data_{lat}_{lng}_{dist}_all_days.csv")
     selected_days.to_csv(file_name_3)
-    save_cloud(file_name_3, file_name_3,bucket_name="sunshade_data_bucket")
+    if cloud:
+            save_cloud(file_name_3, file_name_3,bucket_name="sunshade_data_bucket")
 
     return selected_days
 
 if __name__ == '__main__':
     print('The function is running with the default parameters')
-    sun_shade_solar_panel(lat=40.7588282510779,  lng=-74.00215813632522, dist=50, precision = 10800, accuracy=1,
-                          padding=1800, start = '2021-01-03', end = '2021-12-26', n=4)
+    sun_shade_solar_panel(lat=40.764872246937635,  lng=-73.95399566857668,
+                          dist=50,
+                          precision = 10800,
+                          accuracy=1,
+                          padding=1800,
+                          start = '2021-01-03', end = '2021-12-26',
+                          n=4,
+                          cloud=False)
