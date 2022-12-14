@@ -78,39 +78,43 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
     selected_days=pd.DataFrame()
     selected_days['latitude'] = lat*np.ones(len(day_list))
     selected_days['longitude'] = lng*np.ones(len(day_list))
+    selected_days['distance'] = dist*np.ones(len(day_list))
     selected_days['date'] = day_list
     selected_days['roof']=roof*np.ones(len(day_list))
     selected_days['sunshadow']=0 # init col sunshine
     selected_days['daylight_hour']=0
+    selected_days['energy_absorbed']=0
 
     # Calculate sunshine time on the building roof or on the ground regarding the roof parameter
     # => substraction of the time mesured in shadow to the daylight time (sunset - sunrise)
     for i in range(len(selected_days)):
-        day=str(day_list[i])
-        day = day[:10]
+        day = str(selected_days.loc[i,'date'])[:10]
         sunshine = pybdshadow.cal_sunshine(buildings,
                                     day=day,
                                     roof=roof,
                                     accuracy=accuracy,
                                     precision=precision)
+
         # intersection point with polygon : point p = lng/lat chosen, polygon = area of calculated time of sunshine
         sunshine['intersect'] = sunshine['geometry'].apply(lambda x: x.intersects(p))
         df_test = sunshine[sunshine['intersect'] == True]
+        selected_days.loc[i, 'sunshadow']=(np.mean(df_test['Hour']))
 
-
-        times = get_times(date, lon, lat)
+        #processing the time of daylight
+        date = pd.to_datetime(day+' 12:45:33.959797119')
+        times = get_times(date, lng, lat)
         date_sunrise = times['sunrise']
-        data_sunset = times['sunset']
-        timestamp_sunrise = pd.Series(date_sunrise).astype('int')
-        timestamp_sunset = pd.Series(data_sunset).astype('int')
-        selected_days.daylight_hour.iloc[i]=(timestamp_sunset.iloc[i]-timestamp_sunrise.iloc[i])/(1000000000*3600)
+        date_sunset = times['sunset']
+        selected_days.loc[i, 'daylight_hour'] = (date_sunset - date_sunrise).total_seconds() / 60 / 60 #(timestamp_sunset-timestamp_sunrise)/(1000000000*3600)
 
-        selected_days.sunshadow.iloc[i]=(np.mean(df_test['Hour']))
         # save the data for one day
-        file_name_1=f"raw-data/Data_{lat}_{lng}_{day}.csv"
-        selected_days.to_csv(file_name_1)
-        save_cloud(file_name_1, file_name_1,bucket_name="sunshade_data_bucket"):
+        file_name_1=f"raw-data/Data_{lat}_{lng}_{dist}.csv"
+        if i==0:
+            selected_days.loc[[i],:].to_csv(file_name_1, mode='w', header=True)
+        else:
+            selected_days.loc[[i], :].to_csv(file_name_1, mode='a', header=False)
 
+        save_cloud(file_name_1, file_name_1,bucket_name="sunshade_data_bucket")
 
         # append the sunshine_all :
         sunshine['latitude'] = lat
@@ -119,21 +123,23 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         # save the geodataframe for one day
         file_name_2=f"raw-data/Geodata_{lat}_{lng}_{day}.csv"
         sunshine.to_csv(file_name_2)
-        save_cloud(file_name_2, file_name_2,bucket_name="sunshade_data_bucket"):
+        save_cloud(file_name_2, file_name_2,bucket_name="sunshade_data_bucket")
 
-        #Merge the dataframes
-        #sunshine_all_date = pd.concat([sunshine_all_date,sunshine]) # no need as the data is saved for each days
         print(f'Date : {day} is done')
 
 
     # Merge info from API and Cal_sunshine
     selected_days = selected_days.merge(df_solar_radiation_year, how='inner', on='date')
-    file_name_3=f"raw-data/Data_{lat}_{lng}_all_days.csv"
+
+    # computing new variable "energy_absorbed"
+    selected_days['energy_absorbed']=(selected_days['sunshadow']*selected_days['radiation'])/selected_days['daylight_hour']
+    file_name_3=f"raw-data/Data_{lat}_{lng}_{dist}_all_days.csv"
     selected_days.to_csv(file_name_3)
-    save_cloud(file_name_3, file_name_3,bucket_name="sunshade_data_bucket"):
+    save_cloud(file_name_3, file_name_3,bucket_name="sunshade_data_bucket")
 
     return selected_days
 
 if __name__ == '__main__':
     print('The function is running with the default parameters')
-    #sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, accuracy=1, padding=1800, start = '2021-01-03', end = '2021-12-26', n=2)
+    sun_shade_solar_panel(lat=40.7588282510779,  lng=-74.00215813632522, dist=50, precision = 10800, accuracy=1,
+                          padding=1800, start = '2021-01-03', end = '2021-12-26', n=4)
