@@ -121,7 +121,7 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         sunshine['longitude'] = lng
         sunshine['date'] = day
         # save the geodataframe for one day
-        file_name_2=f"raw-data/Geodata_{lat}_{lng}_{day}.csv"
+        file_name_2=f"raw_data/Geodata_{lat}_{lng}_{day}.csv"
         sunshine.to_csv(file_name_2)
         save_cloud(file_name_2, file_name_2,bucket_name="sunshade_data_bucket")
 
