@@ -10,11 +10,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def (GeoData_directory='./raw-data/GeoData', Image_Storage_directory='./raw-data/Images'):
+def GeoData_to_png(GeoData_directory='./raw-data/GeoData', Image_Storage_directory='./raw-data/Images'):
     
     for file_name in GeoData_directory: # todo
         # read file to df
-        df = pd.read_csv(file_name)# todo
+        df = pd.read_csv(f'{GeoData_directory}/{file_name}')
         
         # decode geometry columns as strings back into shapely objects
         for c in ["geometry"]:
@@ -38,7 +38,5 @@ def (GeoData_directory='./raw-data/GeoData', Image_Storage_directory='./raw-data
         fname = f'{Image_Storage_directory}{file_name[:-4]}.png'
         fname
         plt.savefig(fname, format ='png', dpi=150)
-        
-        
-    
+
     return print('Images are ready')
