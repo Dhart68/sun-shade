@@ -15,9 +15,9 @@ from pybdshadow import bdshadow_sunlight
 from pybdshadow.preprocess import bd_preprocess
 from pybdshadow.analysis import get_timetable, cal_sunshine, cal_sunshadows, cal_shadowcoverage, count_overlapping_features
 
-from sunshade import list_of_selected_days, import_OSM, data_preprocessing
+from sunshade import import_OSM, data_preprocessing
 from sunshade.solar_radiation_requests import historical_solar_radiation
-
+from sunshade.list_of_selected_days import list_of_selected_days
 
 def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, accuracy=1, padding=1800, start = '2021-01-03', end = '2021-12-26', n=2): #Attention distance!
     '''
@@ -63,17 +63,8 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
     buildings = data_preprocessing.data_preprocessing(raw_buildings)
         
     # Loop on the list of the day
-    day_list = list_of_selected_days.list_of_selected_days(start = start, end = end, n=n)
-    
-    # results dataframe preparation
-    selected_days=pd.DataFrame()
-    selected_days['latitude'] = lat
-    selected_days['longitude'] = lng
-    selected_days['date'] = day_list
-    selected_days['roof']=0
-    selected_days['sunshadow']=0 # init col sunshine
-    selected_days['daylight_hour']=0
-    sunshine_all_date = pd.DataFrame()
+
+    day_list = list_of_selected_days(start = start, end = end, n=n)
     
     # Test if selected position is on a roof
     p=Point(lng, lat)
@@ -82,6 +73,15 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         roof = True
     else:
         roof = False
+        
+    # results dataframe preparation
+    selected_days=pd.DataFrame()
+    selected_days['latitude'] = lat*np.ones(len(day_list))
+    selected_days['longitude'] = lng*np.ones(len(day_list))
+    selected_days['date'] = day_list
+    selected_days['roof']=roof*np.ones(len(day_list))
+    selected_days['sunshadow']=0 # init col sunshine
+    selected_days['daylight_hour']=0        
     
     # Calculate sunshine time on the building roof or on the ground regarding the roof parameter
     # => substraction of the time mesured in shadow to the daylight time (sunset - sunrise) 
@@ -97,20 +97,18 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         sunshine['intersect'] = sunshine['geometry'].apply(lambda x: x.intersects(p))
         df_test = sunshine[sunshine['intersect'] == True]
         
-        # append the dataframe :
-        
+
         times = get_times(date, lon, lat)
         date_sunrise = times['sunrise']
         data_sunset = times['sunset']
         timestamp_sunrise = pd.Series(date_sunrise).astype('int')
         timestamp_sunset = pd.Series(data_sunset).astype('int')
         selected_days.daylight_hour.iloc[i]=(timestamp_sunset.iloc[i]-timestamp_sunrise.iloc[i])/(1000000000*3600)
-        
-        selected_days.roof.iloc[i]=roof 
+
         selected_days.sunshadow.iloc[i]=(np.mean(df_test['Hour']))
         # save the data for one day
         file_name_1=f"Data_{lat}_{lng}_{day}"
-        sunshine.to_csv(f'{file_name_1}.csv')
+        selected_days.to_csv(f'./raw-data/{file_name_1}.csv')
         
         # append the sunshine_all :
         sunshine['latitude'] = lat
@@ -118,18 +116,19 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         sunshine['date'] = day
         # save the geodataframe for one day
         file_name_2=f"Geodata_{lat}_{lng}_{day}"
-        sunshine.to_csv(f'{file_name_2}.csv')
+        sunshine.to_csv(f'./raw-data/GeoData/{file_name_2}.csv')
         
         #Merge the dataframes
-        sunshine_all_date = pd.concat([sunshine_all_date,sunshine])
-        print(day)
+        #sunshine_all_date = pd.concat([sunshine_all_date,sunshine]) # no need as the data is saved for each days
+        print(f'Date : {day} is done')
         
         
     # Merge info from API and Cal_sunshine 
     selected_days = selected_days.merge(df_solar_radiation_year, how='inner', on='date')
+    file_name_3=f"Data_{lat}_{lng}_all_days"
+    selected_days.to_csv(f'./raw-data/{file_name_3}.csv')
     
-    
-    return selected_days, sunshine_all_date
+    return selected_days
 
 if __name__ == '__main__':
     print('The function is running with the default parameters')
