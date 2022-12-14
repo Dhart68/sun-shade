@@ -8,13 +8,16 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 
-def (GeoData_directory='./raw-data/GeoData', Image_Storage_directory='./raw-data/Images'):
+def GeoData_to_png(path='./raw-data/GeoData', Image_Storage_directory='./raw-data/Images'):
     
-    for file_name in GeoData_directory: # todo
+    dir_list = os.listdir(path)
+    
+    for file_name in dir_list: 
         # read file to df
-        df = pd.read_csv(file_name)# todo
+        df = pd.read_csv(f'{path}/{file_name}')
         
         # decode geometry columns as strings back into shapely objects
         for c in ["geometry"]:
@@ -26,19 +29,17 @@ def (GeoData_directory='./raw-data/GeoData', Image_Storage_directory='./raw-data
         fig = plt.figure(1,(10,5))
         ax = plt.subplot(111)
         #define colorbar
-        cax = plt.axes([0.15, 0.33, 0.02, 0.3])
+        cax = plt.axes([0.05, 0.33, 0.02, 0.3])
         plt.title('Hour')
         #plot the sunshine time
-        gdf.plot(ax = ax,cmap = 'plasma',column ='Hour',alpha = 1,legend = True,cax = cax) # to do = defining a fixed legend
+        gdf.plot(ax = ax,cmap = 'plasma',column ='Hour',alpha = 1,legend = True,vmin = 0, vmax = 14, cax = cax) 
         #Buildings
         #buildings.plot(ax = ax,edgecolor='k',facecolor=(0,0,0,0))
         plt.sca(ax)
-        plt.title('Sunshine time')
+        plt.title(f'Sunshine time /{file_name}')
         
         fname = f'{Image_Storage_directory}{file_name[:-4]}.png'
         fname
-        plt.savefig(fname, format ='png', dpi=150)
-        
-        
-    
+        plt.savefig(fname, format ='png')
+
     return print('Images are ready')
