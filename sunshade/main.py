@@ -107,9 +107,9 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
 
         selected_days.sunshadow.iloc[i]=(np.mean(df_test['Hour']))
         # save the data for one day
-        file_name_1=f"raw-data/Data_{lat}_{lng}_{day}.csv"
+        file_name_1=f"raw_data/Data_{lat}_{lng}_{day}.csv"
         selected_days.to_csv(file_name_1)
-        save_cloud(file_name_1, file_name_1,bucket_name="sunshade_data_bucket"):
+        save_cloud(file_name_1, file_name_1,bucket_name="sunshade_data_bucket")
 
 
         # append the sunshine_all :
@@ -117,9 +117,9 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         sunshine['longitude'] = lng
         sunshine['date'] = day
         # save the geodataframe for one day
-        file_name_2=f"raw-data/Geodata_{lat}_{lng}_{day}.csv"
+        file_name_2=f"raw_data/Geodata_{lat}_{lng}_{day}.csv"
         sunshine.to_csv(file_name_2)
-        save_cloud(file_name_2, file_name_2,bucket_name="sunshade_data_bucket"):
+        save_cloud(file_name_2, file_name_2,bucket_name="sunshade_data_bucket")
 
         #Merge the dataframes
         #sunshine_all_date = pd.concat([sunshine_all_date,sunshine]) # no need as the data is saved for each days
@@ -128,9 +128,9 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
 
     # Merge info from API and Cal_sunshine
     selected_days = selected_days.merge(df_solar_radiation_year, how='inner', on='date')
-    file_name_3=f"raw-data/Data_{lat}_{lng}_all_days.csv"
+    file_name_3=f"raw_data/Data_{lat}_{lng}_all_days.csv"
     selected_days.to_csv(file_name_3)
-    save_cloud(file_name_3, file_name_3,bucket_name="sunshade_data_bucket"):
+    save_cloud(file_name_3, file_name_3,bucket_name="sunshade_data_bucket")
 
     return selected_days
 
