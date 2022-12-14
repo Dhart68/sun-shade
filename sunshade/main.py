@@ -133,10 +133,10 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96,
         sunshine['longitude'] = lng
         sunshine['date'] = day
         # save the geodataframe for one day
-        #file_name_2 = os.path.join(RAW_DATA_DIR, f"Geodata_{lat}_{lng}_{day}.csv")
-        #sunshine.to_csv(file_name_2)
-        #if cloud:
-        #    save_cloud(file_name_2, file_name_2,bucket_name="sunshade_data_bucket")
+        file_name_2 = os.path.join(RAW_DATA_DIR, f"Geodata_{lat}_{lng}_{day}.csv")
+        sunshine.to_csv(file_name_2)
+        if cloud:
+            save_cloud(file_name_2, file_name_2,bucket_name="sunshade_data_bucket")
 
         print(f'Date : {day} is done')
 
