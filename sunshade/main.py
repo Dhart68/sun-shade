@@ -119,24 +119,24 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96,
         selected_days.loc[i, 'daylight_hour'] = (date_sunset - date_sunrise).total_seconds() / 60 / 60 #(timestamp_sunset-timestamp_sunrise)/(1000000000*3600)
 
         # save the data for one day
-        file_name_1 = os.path.join(RAW_DATA_DIR, f"Data_{lat}_{lng}_{dist}.csv")
+        file_name_1 = f"Data_{lat}_{lng}_{dist}.csv"
         if i==0:
-            selected_days.loc[[i],:].to_csv(file_name_1, mode='w', header=True)
+            selected_days.loc[[i],:].to_csv(os.path.join(RAW_DATA_DIR, file_name_1), mode='w', header=True)
         else:
-            selected_days.loc[[i], :].to_csv(file_name_1, mode='a', header=False)
+            selected_days.loc[[i], :].to_csv(os.path.join(RAW_DATA_DIR, file_name_1), mode='a', header=False)
 
         if cloud:
-            save_cloud(file_name_1, file_name_1,bucket_name="sunshade_data_bucket")
+            save_cloud(file_name_1, f"raw_data/{file_name_1}", bucket_name="sunshade_data_bucket")
 
         # append the sunshine_all :
         sunshine['latitude'] = lat
         sunshine['longitude'] = lng
         sunshine['date'] = day
         # save the geodataframe for one day
-        file_name_2 = os.path.join(RAW_DATA_DIR, f"Geodata_{lat}_{lng}_{day}.csv")
-        sunshine.to_csv(file_name_2)
+        file_name_2 = f"Geodata_{lat}_{lng}_{day}.csv"
+        sunshine.to_csv(os.path.join(RAW_DATA_DIR, file_name_2))
         if cloud:
-            save_cloud(file_name_2, file_name_2,bucket_name="sunshade_data_bucket")
+            save_cloud(file_name_2, f"raw_data/{file_name_2}", bucket_name="sunshade_data_bucket")
 
         print(f'Date : {day} is done')
 
@@ -146,10 +146,10 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96,
 
     # computing new variable "energy_absorbed"
     selected_days['energy_absorbed']=(selected_days['sunshadow']*selected_days['radiation'])/selected_days['daylight_hour']
-    file_name_3 = os.path.join(RAW_DATA_DIR, f"Data_{lat}_{lng}_{dist}_all_days.csv")
-    selected_days.to_csv(file_name_3)
+    file_name_3 = f"Data_{lat}_{lng}_{dist}_all_days.csv"
+    selected_days.to_csv(os.path.join(RAW_DATA_DIR, file_name_3))
     if cloud:
-            save_cloud(file_name_3, file_name_3,bucket_name="sunshade_data_bucket")
+            save_cloud(file_name_3, f"raw_data/{file_name_3}", bucket_name="sunshade_data_bucket")
 
     return selected_days
 
