@@ -63,6 +63,7 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
     buildings = data_preprocessing.data_preprocessing(raw_buildings)
         
     # Loop on the list of the day
+
     day_list = list_of_selected_days(start = start, end = end, n=n)
     
     # Test if selected position is on a roof
@@ -80,7 +81,7 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
     selected_days['date'] = day_list
     selected_days['roof']=roof*np.ones(len(day_list))
     selected_days['sunshadow']=0 # init col sunshine
-            
+    selected_days['daylight_hour']=0        
     
     # Calculate sunshine time on the building roof or on the ground regarding the roof parameter
     # => substraction of the time mesured in shadow to the daylight time (sunset - sunrise) 
@@ -96,7 +97,14 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96, dist=50, precision = 10800, ac
         sunshine['intersect'] = sunshine['geometry'].apply(lambda x: x.intersects(p))
         df_test = sunshine[sunshine['intersect'] == True]
         
-        # append the dataframe :  
+
+        times = get_times(date, lon, lat)
+        date_sunrise = times['sunrise']
+        data_sunset = times['sunset']
+        timestamp_sunrise = pd.Series(date_sunrise).astype('int')
+        timestamp_sunset = pd.Series(data_sunset).astype('int')
+        selected_days.daylight_hour.iloc[i]=(timestamp_sunset.iloc[i]-timestamp_sunrise.iloc[i])/(1000000000*3600)
+
         selected_days.sunshadow.iloc[i]=(np.mean(df_test['Hour']))
         # save the data for one day
         file_name_1=f"Data_{lat}_{lng}_{day}"
