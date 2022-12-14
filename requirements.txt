@@ -133,3 +133,4 @@ websocket-client==1.4.2
 Werkzeug==2.2.2
 widgetsnbextension==3.6.1
 wsproto==1.2.0
+google-cloud-storage
