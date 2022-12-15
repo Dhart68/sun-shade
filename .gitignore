@@ -3,6 +3,8 @@ raw_data/
 .coverage
 .ipynb_checkpoints
 **/*.DS_Store
+raw=data/
+raw_data/
 data_raw/
 data_processed/
 *.csv
@@ -12,3 +14,4 @@ __pycache__/
 .python-version
 cache/
 my_notebooks/
+**.png
