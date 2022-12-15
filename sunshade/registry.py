@@ -1,5 +1,9 @@
+import os
 from google.cloud import storage
 import pandas as pd
+
+PACKAGE_DIR = os.path.dirname(os.path.dirname(__file__))
+RAW_DATA_DIR = os.path.join(PACKAGE_DIR, 'raw_data')
 
 def save_local(name:str,data:pd.DataFrame):
     '''Save a Dataframe to a csv file'''
@@ -8,7 +12,7 @@ def save_local(name:str,data:pd.DataFrame):
 
 
 
-def save_cloud(source_file_name, destination_blob_name,bucket_name="sunshade_data_bucket"):
+def save_cloud(source_file_name, destination_blob_name, bucket_name="sunshade_data_bucket"):
     """Uploads a file to the bucket."""
     # The ID of your GCS bucket
     # bucket_name = "your-bucket-name"
@@ -22,7 +26,7 @@ def save_cloud(source_file_name, destination_blob_name,bucket_name="sunshade_dat
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
 
-    blob.upload_from_filename(source_file_name)
+    blob.upload_from_filename(os.path.join(RAW_DATA_DIR, source_file_name))
 
     print(
         f"File {source_file_name} uploaded to {destination_blob_name}."
