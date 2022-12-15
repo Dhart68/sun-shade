@@ -36,7 +36,7 @@ def GeoData_to_png(path='./raw-data/GeoData', Image_Storage_directory='./raw-dat
         #Buildings
         #buildings.plot(ax = ax,edgecolor='k',facecolor=(0,0,0,0))
         plt.sca(ax)
-        plt.title(f'Sunshine time /{file_name}')
+        plt.title(f'Sunshine time /{file_name.rsplit('_20', 1)[1]}')
         
         fname = f'{Image_Storage_directory}{file_name[:-4]}.png'
         fname
