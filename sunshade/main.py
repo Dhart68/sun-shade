@@ -30,7 +30,7 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96,
                           padding=1800,
                           start = '2021-01-03', end = '2021-12-26',
                           n=2,
-                          cloud=True): #Attention distance!
+                          cloud=False): #Attention distance!
     '''
     Calculate the sunshine time in given date for a position, taking into account buildings arount a circle of dist in meter
 
@@ -153,13 +153,16 @@ def sun_shade_solar_panel(lat=40.775, lng=-73.96,
 
     return selected_days
 
+
+
+
 if __name__ == '__main__':
     print('The function is running with the default parameters')
-    sun_shade_solar_panel(lat=40.764872246937635,  lng=-73.95399566857668,
-                          dist=50,
-                          precision = 10800,
-                          accuracy=1,
-                          padding=1800,
+    sun_shade_solar_panel(lat=40.76254574458414,   lng=-73.98816291933007    ,
+                          dist=400,
+                          precision = 3600,
+                          accuracy = 1,
+                          padding = 1800,
                           start = '2021-01-03', end = '2021-12-26',
-                          n=4,
+                          n=52,
                           cloud=False)
