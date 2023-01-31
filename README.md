@@ -1,6 +1,7 @@
-"""# Sun and Shades for Solar Panels
+<!-- #region -->
+# Sun & Shades for Solar Panels
 ## Check if it is interesting to implement a solar panel in a given place.
-"""
+
 
 The goal of this repository is to provide a website to test the solar exposure of a place regarding the shadow of the surrounding buildings and the weather forecast history over the past year (2021). 
 To decide if it worth to put a solar panel at a location, we choose the threshold of 4 kwh/m2/day. The goal is to display a plot of the variation of the solar exposure along a year and a GIF animation to see the variation of the sun around the location chose.
@@ -10,11 +11,11 @@ For the position longitude = "-73.98530154756561" and latitude = "40.76616942412
 -	the solar radiation regarding the forecast of 2021
 -	the solar energy
  
-!["Plot of variation of solar exposure of a roof in Kitchen Hell - Manhattan"](https://github.com/Dhart68/sun-shade/blob/main/UI/plot.png "Kitchen Hell - Manhattan")
+!["Plot of variation of solar exposure of a roof in Kitchen Hell - Manhattan"](./UI/plot.png "Kitchen Hell - Manhattan")
  
 We want also to add a GIF animation of the neiboorhood to have a broader view of the shadows effect and display in color what's happen near the point of interest tested. The point of interest is displayed with a red dot.
 
-!["GIF animation of solar exposure of a roof in Kitchen Hell - Manhattan"](https://github.com/Dhart68/sun-shade/blob/main/UI/images/png_to_gif.gif "GIF Kitchen Hell - Manhattan")
+!["GIF animation of solar exposure of a roof in Kitchen Hell - Manhattan"](./UI/images/png_to_gif.gif "GIF Kitchen Hell - Manhattan")
 
 The website need only a geolocation in longitude and latitude, but other parameters could be changed in the code :
 -	The size of the area around the place (by default 50m)
@@ -31,4 +32,11 @@ Next steps:
 -	Add cost of local electricity  measure cost efficiency $$
 -	Information of height of the buildings in Open Street Map is not always available
 
-Feel free to comment, and, if you want to help, you are welcome. 
+Feel free to comment.
+If you want to help, you are welcome :)
+
+<!-- #endregion -->
+
+```python
+
+```
